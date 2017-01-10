@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {
 	Text, View, StyleSheet, Dimensions,
-	Modal, TouchableHighlight, Animated, ScrollView
+	TouchableHighlight, Animated, ScrollView
 } from 'react-native';
 
 import styles, {btnStyle, sheetStyle, hairlineWidth} from './styles';
@@ -135,27 +135,20 @@ class ActionSheet extends Component {
 		const { cancelButtonIndex } = this.props;
 		const { visible, sheetAnim } = this.state;
 		return (
-			<Modal
-				visible={visible}
-				transparent={true}
-				animationType="none"
-				onRequestClose={this._cancel}
-			>
-				<View style={sheetStyle.wrapper}>
-					<Text style={styles.overlay} onPress={this._cancel}></Text>
-					<Animated.View
-						style={[sheetStyle.bd, {height: this.translateY, transform: [{translateY: sheetAnim}]}]}
-					>
-						{this._renderTitle()}
-						<ScrollView
-							scrollEnabled={this.scrollEnabled}
-							contentContainerStyle={sheetStyle.options}>
-							{this._renderOptions()}
-						</ScrollView>
-						{this._renderCancelButton()}
-					</Animated.View>
-				</View>
-			</Modal>
+      <View style={sheetStyle.wrapper}>
+        <Text style={styles.overlay} onPress={this._cancel}></Text>
+        <Animated.View
+          style={[sheetStyle.bd, {height: this.translateY, transform: [{translateY: sheetAnim}]}]}
+        >
+          {this._renderTitle()}
+          <ScrollView
+            scrollEnabled={this.scrollEnabled}
+            contentContainerStyle={sheetStyle.options}>
+            {this._renderOptions()}
+          </ScrollView>
+          {this._renderCancelButton()}
+        </Animated.View>
+      </View>
 		);
 	}
 }

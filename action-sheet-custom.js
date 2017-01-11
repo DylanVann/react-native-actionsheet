@@ -1,7 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {
-	Text, View, StyleSheet, Dimensions,
-	TouchableHighlight, Animated, ScrollView
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableHighlight,
+  Animated,
+  ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import styles, {btnStyle, sheetStyle, hairlineWidth} from './styles';
@@ -21,8 +27,7 @@ class ActionSheet extends Component {
 		this.scrollEnabled = false;
 		this.translateY = this._calculateHeight(props);
 		this.state = {
-			visible: false,
-			sheetAnim: new Animated.Value(this.translateY)
+			anim: new Animated.Value(0),
 		};
 		this._cancel = this._cancel.bind(this);
 	}
@@ -32,37 +37,33 @@ class ActionSheet extends Component {
 	}
 
 	show() {
-		this.setState({visible: true});
 		this._showSheet();
 	}
 
 	hide(index) {
 		this._hideSheet(() => {
-			this.setState({visible: false});
 			this.props.onPress(index);
 		});
 	}
 
 	_cancel() {
 		const { cancelButtonIndex } = this.props;
-		// 保持和 ActionSheetIOS 一致，
-		// 未设置 cancelButtonIndex 时，点击背景不隐藏 ActionSheet
 		if (cancelButtonIndex > -1) {
 			this.hide(cancelButtonIndex);
 		}
 	}
 
 	_showSheet() {
-		Animated.timing(this.state.sheetAnim, {
-			toValue: 0,
-			duration: 250
+		Animated.timing(this.state.anim, {
+			toValue: 1,
+			duration: 2500,
 		}).start();
 	}
 
 	_hideSheet(callback) {
-		Animated.timing(this.state.sheetAnim, {
-			toValue: this.translateY,
-			duration: 150
+		Animated.timing(this.state.anim, {
+			toValue: 0,
+      duration: 2500,
 		}).start(callback || function() {});
 	}
 
@@ -133,17 +134,40 @@ class ActionSheet extends Component {
 
 	render() {
 		const { cancelButtonIndex } = this.props;
-		const { visible, sheetAnim } = this.state;
+		const { anim } = this.state;
 		return (
-      <View style={sheetStyle.wrapper}>
-        <Text style={styles.overlay} onPress={this._cancel}></Text>
+      <View style={styles.container}>
+        <TouchableWithoutFeedback onPress={this._cancel}>
+          <Animated.View
+            style={[
+              styles.overlay,
+              {
+                opacity: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 0.4],
+                }),
+              },
+            ]}
+          />
+        </TouchableWithoutFeedback>
         <Animated.View
-          style={[sheetStyle.bd, {height: this.translateY, transform: [{translateY: sheetAnim}]}]}
+          style={[
+            sheetStyle.bd,
+            {
+              height: this.translateY,
+              transform: [{
+                translateY: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [this.translateY, 0],
+                })
+              }],
+            },
+          ]}
         >
           {this._renderTitle()}
           <ScrollView
             scrollEnabled={this.scrollEnabled}
-            contentContainerStyle={sheetStyle.options}>
+          >
             {this._renderOptions()}
           </ScrollView>
           {this._renderCancelButton()}

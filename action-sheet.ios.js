@@ -58,7 +58,3 @@ ActionSheet.defaultProps = {
 
 
 export default ActionSheet;
-
-
-
-

@@ -56,14 +56,14 @@ class ActionSheet extends Component {
 	_showSheet() {
 		Animated.timing(this.state.anim, {
 			toValue: 1,
-			duration: 2500,
+			duration: 250,
 		}).start();
 	}
 
 	_hideSheet(callback) {
 		Animated.timing(this.state.anim, {
 			toValue: 0,
-      duration: 2500,
+      duration: 150,
 		}).start(callback || function() {});
 	}
 
